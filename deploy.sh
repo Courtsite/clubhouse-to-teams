@@ -2,7 +2,7 @@
 
 set +e
 
-gcloud functions deploy clubhouse-to-discord \
+gcloud functions deploy clubhouse-to-teams \
     --entry-point=F \
     --memory=128MB \
     --region=us-central1 \

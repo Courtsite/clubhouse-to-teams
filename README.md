@@ -1,10 +1,12 @@
-# clubhouse-to-discord
+# clubhouse-to-teams
 
-📝 A simple Google Cloud Function in Go to transform / proxy [Clubhouse](https://clubhouse.io/) (Project Management) webhooks to [Discord](https://discordapp.com/).
+📝 A simple Google Cloud Function in Go to transform / proxy [Clubhouse](https://clubhouse.io/) (Project Management) webhooks to [Microsoft Teams](https://teams.microsoft.com/).
 
 _This project is still under development, and it does not handle many cases. It has been tested with the Go 1.13 runtime._
 
-![Webhook in Discord](screenshot.png "Webhook in Discord")
+![Notification in Teams](screenshot.png "Notification in Teams")
+
+_Forked from https://github.com/Courtsite/clubhouse-to-discord_
 
 
 ## Getting Started
