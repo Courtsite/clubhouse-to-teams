@@ -96,6 +96,10 @@ type ClubhouseChanges struct {
 		New *int `json:"new,omitempty"`
 		Old *int `json:"old,omitempty"`
 	} `json:"estimate,omitempty"`
+	ExternalLinks *struct {
+		Adds    []string `json:"adds"`
+		Removes []string `json:"removes"`
+	} `json:"external_links,omitempty"`
 	FollowerIds *struct {
 		Adds []string `json:"adds"`
 	} `json:"follower_ids,omitempty"`
@@ -107,6 +111,10 @@ type ClubhouseChanges struct {
 		Adds    []int `json:"adds"`
 		Removes []int `json:"removes"`
 	} `json:"label_ids,omitempty"`
+	Name *struct {
+		New string `json:"new"`
+		Old string `json:"old"`
+	} `json:"name,omitempty"`
 	OwnerIds *struct {
 		Adds    []string `json:"adds"`
 		Removes []string `json:"removes"`
@@ -533,6 +541,22 @@ func getChangesFacts(
 		})
 	}
 
+	if changes.ExternalLinks != nil {
+		if len(changes.ExternalLinks.Adds) > 0 {
+			facts = append(facts, Fact{
+				Name:  "Link(s) Added",
+				Value: strings.Join(changes.ExternalLinks.Adds, "\n"),
+			})
+		}
+
+		if len(changes.ExternalLinks.Removes) > 0 {
+			facts = append(facts, Fact{
+				Name:  "Link(s) Removed",
+				Value: strings.Join(changes.ExternalLinks.Removes, "\n"),
+			})
+		}
+	}
+
 	if changes.IterationID != nil {
 		oldIterationValue := "None"
 		if changes.IterationID.Old != nil {
@@ -596,6 +620,13 @@ func getChangesFacts(
 				})
 			}
 		}
+	}
+
+	if changes.Name != nil {
+		facts = append(facts, Fact{
+			Name:  "Name",
+			Value: strings.Title(fmt.Sprintf("%s -> %s", changes.Name.Old, changes.Name.New)),
+		})
 	}
 
 	if changes.OwnerIds != nil {
