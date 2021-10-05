@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-type ClubhouseApiClient struct {
+type ShortcutApiClient struct {
 	ApiToken string
 }
 
-// https://clubhouse.io/api/rest/v3/#Get-Member
+// https://shortcut.com/api/rest/v3#Get-Member
 type GetMemberResponse struct {
 	CreatedAt  time.Time `json:"created_at"`
 	Disabled   bool      `json:"disabled"`
@@ -41,17 +41,17 @@ type GetMemberResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (c *ClubhouseApiClient) GetMember(memberPublicID string) (*GetMemberResponse, error) {
+func (c *ShortcutApiClient) GetMember(memberPublicID string) (*GetMemberResponse, error) {
 	httpClient := http.Client{}
 
-	apiURL := fmt.Sprintf("https://api.clubhouse.io/api/v3/members/%s", memberPublicID)
+	apiURL := fmt.Sprintf("https://api.app.shortcut.com/api/v3/members/%s", memberPublicID)
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Clubhouse-Token", c.ApiToken)
+	req.Header.Set("Shortcut-Token", c.ApiToken)
 
 	res, err := httpClient.Do(req)
 	if err != nil {

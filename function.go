@@ -17,46 +17,46 @@ import (
 	"time"
 )
 
-// Expanded from https://clubhouse.io/api/webhook/v1/#Webhook-Format
-type ClubhouseWebhook struct {
-	Actions    []ClubhouseAction    `json:"actions"`
-	ChangedAt  time.Time            `json:"changed_at"`
-	ID         string               `json:"id"`
-	MemberID   string               `json:"member_id"`
-	PrimaryID  int                  `json:"primary_id"`
-	References []ClubhouseReference `json:"references"`
-	Paper      *string              `json:"paper,omitempty"`
-	Version    string               `json:"version"`
+// Expanded from https://shortcut.com/api/webhook/v1#Webhook-Format
+type ShortcutWebhook struct {
+	Actions    []ShortcutAction    `json:"actions"`
+	ChangedAt  time.Time           `json:"changed_at"`
+	ID         string              `json:"id"`
+	MemberID   string              `json:"member_id"`
+	PrimaryID  int                 `json:"primary_id"`
+	References []ShortcutReference `json:"references"`
+	Paper      *string             `json:"paper,omitempty"`
+	Version    string              `json:"version"`
 }
 
-type ClubhouseAction struct {
-	Action          string           `json:"action"`
-	AppURL          string           `json:"app_url"`
-	AuthorID        string           `json:"author_id"`
-	Changes         ClubhouseChanges `json:"changes"`
-	Complete        bool             `json:"complete,omitempty"`
-	Description     string           `json:"description"`
-	EntityType      string           `json:"entity_type"`
-	EpicID          int              `json:"epic_id"`
-	Estimate        int              `json:"estimate,omitempty"`
-	FollowerIds     []string         `json:"follower_ids"`
-	ID              int              `json:"id"`
-	IterationID     int              `json:"iteration_id"`
-	MilestoneID     int              `json:"milestone_id"`
-	Name            string           `json:"name"`
-	OwnerIds        []string         `json:"owner_ids"`
-	Position        int64            `json:"position"`
-	ProjectID       int              `json:"project_id"`
-	RequestedByID   string           `json:"requested_by_id"`
-	StoryType       string           `json:"story_type"`
-	TaskIds         []int            `json:"task_ids,omitempty"`
-	Town            *string          `json:"town,omitempty"`
-	Text            string           `json:"text"`
-	URL             string           `json:"url"`
-	WorkflowStateID int              `json:"workflow_state_id"`
+type ShortcutAction struct {
+	Action          string          `json:"action"`
+	AppURL          string          `json:"app_url"`
+	AuthorID        string          `json:"author_id"`
+	Changes         ShortcutChanges `json:"changes"`
+	Complete        bool            `json:"complete,omitempty"`
+	Description     string          `json:"description"`
+	EntityType      string          `json:"entity_type"`
+	EpicID          int             `json:"epic_id"`
+	Estimate        int             `json:"estimate,omitempty"`
+	FollowerIds     []string        `json:"follower_ids"`
+	ID              int             `json:"id"`
+	IterationID     int             `json:"iteration_id"`
+	MilestoneID     int             `json:"milestone_id"`
+	Name            string          `json:"name"`
+	OwnerIds        []string        `json:"owner_ids"`
+	Position        int64           `json:"position"`
+	ProjectID       int             `json:"project_id"`
+	RequestedByID   string          `json:"requested_by_id"`
+	StoryType       string          `json:"story_type"`
+	TaskIds         []int           `json:"task_ids,omitempty"`
+	Town            *string         `json:"town,omitempty"`
+	Text            string          `json:"text"`
+	URL             string          `json:"url"`
+	WorkflowStateID int             `json:"workflow_state_id"`
 }
 
-type ClubhouseReference struct {
+type ShortcutReference struct {
 	AppURL     string `json:"app_url"`
 	EntityType string `json:"entity_type"`
 	ID         int    `json:"id"`
@@ -64,7 +64,7 @@ type ClubhouseReference struct {
 	Type       string `json:"type"`
 }
 
-type ClubhouseChanges struct {
+type ShortcutChanges struct {
 	Archived *struct {
 		New bool `json:"new"`
 		Old bool `json:"old"`
@@ -176,7 +176,7 @@ type PotentialAction struct {
 	Targets []map[string]string `json:"targets,omitempty"`
 }
 
-func toTeams(clubhouseApiClient *ClubhouseApiClient, webhook ClubhouseWebhook) (*MessageCard, error) {
+func toTeams(shortcutApiClient *ShortcutApiClient, webhook ShortcutWebhook) (*MessageCard, error) {
 	firstAction := webhook.Actions[0]
 
 	// actionsByID := getActionsByID(webhook)
@@ -197,7 +197,7 @@ func toTeams(clubhouseApiClient *ClubhouseApiClient, webhook ClubhouseWebhook) (
 		}
 	case "update":
 		colour = "#36cfc9"
-		facts, err = getChangesFacts(clubhouseApiClient, referencesByTypeID, firstAction.Changes)
+		facts, err = getChangesFacts(shortcutApiClient, referencesByTypeID, firstAction.Changes)
 		if err != nil {
 			return nil, err
 		}
@@ -224,7 +224,7 @@ func toTeams(clubhouseApiClient *ClubhouseApiClient, webhook ClubhouseWebhook) (
 		)
 
 		if webhook.MemberID != "" {
-			member, err := clubhouseApiClient.GetMember(webhook.MemberID)
+			member, err := shortcutApiClient.GetMember(webhook.MemberID)
 			if err != nil {
 				return nil, err
 			}
@@ -268,7 +268,7 @@ func toTeams(clubhouseApiClient *ClubhouseApiClient, webhook ClubhouseWebhook) (
 		PotentialActions: []PotentialAction{
 			{
 				Type: "OpenUri",
-				Name: "View in Clubhouse",
+				Name: "View in Shortcut",
 				Targets: []map[string]string{
 					{
 						"os":  "default",
@@ -290,12 +290,12 @@ func F(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	clubhouseApiToken := os.Getenv("CLUBHOUSE_API_TOKEN")
-	if clubhouseApiToken == "" {
-		log.Fatalln("`CLUBHOUSE_API_TOKEN` is not set in the environment")
+	shortcutApiToken := os.Getenv("SHORTCUT_API_TOKEN")
+	if shortcutApiToken == "" {
+		log.Fatalln("`SHORTCUT_API_TOKEN` is not set in the environment")
 	}
 
-	clubhouseApiClient := &ClubhouseApiClient{ApiToken: clubhouseApiToken}
+	shortcutApiClient := &ShortcutApiClient{ApiToken: shortcutApiToken}
 
 	if contentType := r.Header.Get("Content-Type"); r.Method != "POST" || contentType != "application/json" {
 		log.Printf("\ninvalid method / content-type: %s / %s \n", r.Method, contentType)
@@ -309,34 +309,34 @@ func F(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	clubhouseWebhookSecret := os.Getenv("CLUBHOUSE_WEBHOOK_SECRET")
+	shortcutWebhookSecret := os.Getenv("SHORTCUT_WEBHOOK_SECRET")
 
-	if clubhouseSignature := strings.TrimSpace(r.Header.Get("Clubhouse-Signature")); clubhouseSignature != "" {
-		if clubhouseWebhookSecret == "" {
-			log.Fatalln("received webhook with signature, but `CLUBHOUSE_WEBHOOK_SECRET` was not set in the environment")
+	if shortcutSignature := strings.TrimSpace(r.Header.Get("Payload-Signature")); shortcutSignature != "" {
+		if shortcutWebhookSecret == "" {
+			log.Fatalln("received webhook with signature, but `SHORTCUT_WEBHOOK_SECRET` was not set in the environment")
 		}
 
-		mac := hmac.New(sha256.New, []byte(strings.TrimSpace(clubhouseWebhookSecret)))
+		mac := hmac.New(sha256.New, []byte(strings.TrimSpace(shortcutWebhookSecret)))
 		_, err = mac.Write(data)
 		if err != nil {
 			log.Fatalln(err)
 		}
 		expectedMAC := mac.Sum(nil)
 
-		clubhouseHexSignature, err := hex.DecodeString(clubhouseSignature)
+		shortcutHexSignature, err := hex.DecodeString(shortcutSignature)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		if !hmac.Equal(clubhouseHexSignature, expectedMAC) {
-			log.Printf("\nsignature does not match: %s (got) != %s (want) \n", hex.EncodeToString(clubhouseHexSignature), hex.EncodeToString(expectedMAC))
+		if !hmac.Equal(shortcutHexSignature, expectedMAC) {
+			log.Printf("\nsignature does not match: %s (got) != %s (want) \n", hex.EncodeToString(shortcutHexSignature), hex.EncodeToString(expectedMAC))
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = w.Write([]byte("invalid request"))
 			return
 		}
 	}
 
-	var webhook ClubhouseWebhook
+	var webhook ShortcutWebhook
 	err = json.Unmarshal(data, &webhook)
 	if err != nil {
 		log.Printf("\nraw data received: %q \n", data)
@@ -356,7 +356,7 @@ func F(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	teamsWebhook, err := toTeams(clubhouseApiClient, webhook)
+	teamsWebhook, err := toTeams(shortcutApiClient, webhook)
 	if err != nil {
 		log.Printf("\nraw data received: %q \n", data)
 		log.Fatalln(err)
@@ -391,8 +391,8 @@ func F(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getActionsByID(webhook ClubhouseWebhook) map[string]ClubhouseAction {
-	actionsByID := make(map[string]ClubhouseAction)
+func getActionsByID(webhook ShortcutWebhook) map[string]ShortcutAction {
+	actionsByID := make(map[string]ShortcutAction)
 
 	for _, action := range webhook.Actions {
 		actionsByID[strconv.Itoa(action.ID)] = action
@@ -401,8 +401,8 @@ func getActionsByID(webhook ClubhouseWebhook) map[string]ClubhouseAction {
 	return actionsByID
 }
 
-func getReferencesByTypeID(webhook ClubhouseWebhook) map[string]ClubhouseReference {
-	referencesByTypeID := make(map[string]ClubhouseReference)
+func getReferencesByTypeID(webhook ShortcutWebhook) map[string]ShortcutReference {
+	referencesByTypeID := make(map[string]ShortcutReference)
 
 	for _, reference := range webhook.References {
 		typeID := fmt.Sprintf("%s:%d", reference.EntityType, reference.ID)
@@ -412,7 +412,7 @@ func getReferencesByTypeID(webhook ClubhouseWebhook) map[string]ClubhouseReferen
 	return referencesByTypeID
 }
 
-func getActionFacts(referencesByTypeID map[string]ClubhouseReference, action ClubhouseAction) []Fact {
+func getActionFacts(referencesByTypeID map[string]ShortcutReference, action ShortcutAction) []Fact {
 	var facts []Fact
 
 	if action.StoryType != "" {
@@ -478,9 +478,9 @@ func getActionFacts(referencesByTypeID map[string]ClubhouseReference, action Clu
 }
 
 func getChangesFacts(
-	clubhouseApiClient *ClubhouseApiClient,
-	referencesByTypeID map[string]ClubhouseReference,
-	changes ClubhouseChanges,
+	shortcutApiClient *ShortcutApiClient,
+	referencesByTypeID map[string]ShortcutReference,
+	changes ShortcutChanges,
 ) ([]Fact, error) {
 	var facts []Fact
 
@@ -633,7 +633,7 @@ func getChangesFacts(
 		if len(changes.OwnerIds.Adds) > 0 {
 			ownersAdded := make([]string, len(changes.OwnerIds.Adds))
 			for i, ownerID := range changes.OwnerIds.Adds {
-				member, err := clubhouseApiClient.GetMember(ownerID)
+				member, err := shortcutApiClient.GetMember(ownerID)
 				if err != nil {
 					return []Fact{}, err
 				}
@@ -649,7 +649,7 @@ func getChangesFacts(
 		if len(changes.OwnerIds.Removes) > 0 {
 			ownersRemoved := make([]string, len(changes.OwnerIds.Removes))
 			for i, ownerID := range changes.OwnerIds.Removes {
-				member, err := clubhouseApiClient.GetMember(ownerID)
+				member, err := shortcutApiClient.GetMember(ownerID)
 				if err != nil {
 					return []Fact{}, err
 				}

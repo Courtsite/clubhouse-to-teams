@@ -1,3 +1,3 @@
-module github.com/courtsite/clubhouse-to-teams
+module github.com/courtsite/shortcut-to-teams
 
 go 1.16

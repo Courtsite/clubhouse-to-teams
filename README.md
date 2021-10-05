@@ -1,6 +1,6 @@
-# clubhouse-to-teams
+# shortcut-to-teams
 
-📝 A simple Google Cloud Function in Go to transform / proxy [Clubhouse](https://clubhouse.io/) (Project Management) webhooks to [Microsoft Teams](https://teams.microsoft.com/).
+📝 A simple Google Cloud Function in Go to transform / proxy [Shortcut](https://shortcut.com/) (formerly, Clubhouse Project Management) webhooks to [Microsoft Teams](https://teams.microsoft.com/).
 
 _This project is still under development, and it does not handle many cases. It has been tested with the Go 1.13 runtime._
 
@@ -24,8 +24,17 @@ _Forked from https://github.com/Courtsite/clubhouse-to-discord_
 1. Clone / download a copy of this repository
 2. Copy `.env.sample.yaml` to `.env.yaml`, and modify the environment variables declared in the file
 3. Run `./deploy.sh`
-4. Configure Clubhouse webhooks integration in `https://app.clubhouse.io/<workspace>/settings/integrations/outgoing-webhook`
+4. Configure Shortcut webhooks integration in `https://app.shortcut.com/<workspace>/settings/integrations/outgoing-webhook`
 
-![Clubhouse's Generic Outgoing Webhook Integration](installation_1.png "Clubhouse's Generic Outgoing Webhook Integration")
+![Shortcut's Generic Outgoing Webhook Integration](installation_1.png "Shortcut's Generic Outgoing Webhook Integration")
 
-![Clubhouse Generate API Token](installation_2.png "Clubhouse Generate API Token")
+![Shortcut Generate API Token](installation_2.png "Shortcut Generate API Token")
+
+
+## Migrating from Clubhouse to Shortcut
+
+As of 2021-10-05, we have updated the function to reference "Shortcut" instead of the former "Clubhouse".
+
+This updated function uses the latest Shortcut REST API specs. We suggest deploying this updated version, and updating your webhooks, before deleting the old `clubhouse-to-teams`.
+
+If you do not update, your function may not work after November 13th, 2021.
