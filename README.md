@@ -2,7 +2,7 @@
 
 📝 A simple Google Cloud Function in Go to transform / proxy [Shortcut](https://shortcut.com/) (formerly, Clubhouse Project Management) webhooks to [Microsoft Teams](https://teams.microsoft.com/).
 
-_This project is still under development, and it does not handle many cases. It has been tested with the Go 1.13 runtime._
+_This project is not feature complete, and it does not handle many cases. It has been tested with the Go 1.13 and 1.22 runtime._
 
 ![Notification in Teams](screenshot.png "Notification in Teams")
 

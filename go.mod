@@ -1,3 +1,3 @@
 module github.com/courtsite/shortcut-to-teams
 
-go 1.16
+go 1.18
